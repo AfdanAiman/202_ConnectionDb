@@ -1,14 +1,33 @@
-const express = require('express');
-const { Pool } = require('pg');
-
+import express from "express";
+import pg from "pg";
 const app = express();
 const port = 3000;
+const { Pool } = pg;
+
+app.use(express.json());
+app.use(
+  express.urlencoded({
+    extended: true,
+  }),
+);
 const pool = new Pool({
-  user: 'postgres',        
-  host: 'localhost',
-  database: 'mahasiswa',
-  password: 'afdan123',  
+  user: "postgres",
+  host: "localhost",
+  database: "mahasiswa",
+  password: "afdan123",
   port: 5432,
 });
 
-module.exports = pool;
+app.get('/', (req, res, next) => {
+    console.log("TEST DATA : ");
+    pool.query('Select * from biodata')
+    .then(testData => {
+        console.log(testData.rows);
+        res.send(testData.rows);
+    })
+    .catch(err => {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    });
+})
+
